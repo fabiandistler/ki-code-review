@@ -1,0 +1,263 @@
+{
+  "approved": false,
+  "items": [
+    {
+      "attempts": 0,
+      "check": "test -f pyproject.toml && test -f src/ki_review/__init__.py && uv sync --frozen && uv run ruff check . && uv run ruff format --check . && uv run pyright",
+      "deps": [],
+      "detail": "Scaffold minimal Python layout with uv: package src/ki_review, tests/, pyproject.toml with ruff (E,F,I,B,UP) and pyright strict, dev deps pytest/ruff/pyright. No app code yet, only structure plus locked deps.",
+      "id": "prd-01",
+      "origin": "spec",
+      "passes": false,
+      "title": "Toolchain scaffold Python uv package layout"
+    },
+    {
+      "attempts": 0,
+      "check": "test -f .github/workflows/ci.yml && grep -q \"uv run pytest\" .github/workflows/ci.yml && grep -q \"plans/\" .github/workflows/ci.yml",
+      "deps": [
+        "prd-01"
+      ],
+      "detail": "Add GitHub Actions workflow .github/workflows/ci.yml on pull_request and push to main with paths-ignore plans/**, running full gate: pytest, ruff check, ruff format --check, pyright.",
+      "id": "prd-02",
+      "origin": "spec",
+      "passes": false,
+      "title": "GitHub Actions CI with test and lint gate"
+    },
+    {
+      "attempts": 0,
+      "check": "test -f Dockerfile && test $(grep -c \"^FROM\" Dockerfile) -ge 2 && grep -q \"AS test\" Dockerfile",
+      "deps": [
+        "prd-01"
+      ],
+      "detail": "Add multi-stage Dockerfile: base, test stage running the suite, final runtime stage exposing 8000. No app copy tricks, deterministic builds.",
+      "id": "prd-03",
+      "origin": "spec",
+      "passes": false,
+      "title": "Multi-stage Dockerfile with test stage"
+    },
+    {
+      "attempts": 0,
+      "check": "uv run pytest tests/test_health.py -q",
+      "deps": [
+        "prd-01"
+      ],
+      "detail": "Create FastAPI app factory in src/ki_review/app.py with GET /health returning {\"status\": \"ok\"}. Typed, no business logic.\nProduces: create_app() -> FastAPI",
+      "id": "prd-04",
+      "origin": "spec",
+      "passes": false,
+      "title": "FastAPI app factory with health endpoint"
+    },
+    {
+      "attempts": 0,
+      "check": "uv run pytest tests/test_config.py -q",
+      "deps": [
+        "prd-01"
+      ],
+      "detail": "Add typed settings module src/ki_review/config.py reading env (HOST, PORT, GITHUB_TOKEN optional) with defaults. No secrets stored.\nProduces: get_settings() -> Settings",
+      "id": "prd-05",
+      "origin": "spec",
+      "passes": false,
+      "title": "Typed settings and logging base"
+    },
+    {
+      "attempts": 0,
+      "check": "uv run pytest tests/test_models.py -q",
+      "deps": [
+        "prd-01"
+      ],
+      "detail": "Add domain models src/ki_review/models.py: FileDiff, Finding, ReviewRequest, ReviewReport as pydantic/dataclasses with severity enum. Helper constructor used by all checks.\nProduces: build_finding(code: str, message: str, severity: str, path: str, line: int) -> Finding",
+      "id": "prd-06",
+      "origin": "spec",
+      "passes": false,
+      "title": "Domain models for findings and reports"
+    },
+    {
+      "attempts": 0,
+      "check": "uv run pytest tests/test_diff_parser.py -q",
+      "deps": [
+        "prd-01"
+      ],
+      "detail": "Add unified diff parser src/ki_review/diff.py handling multi-file diffs, hunks, line numbers, empty and malformed input with typed errors.\nProduces: parse_unified_diff(text: str) -> list[FileDiff]",
+      "id": "prd-07",
+      "origin": "spec",
+      "passes": false,
+      "title": "Unified diff parser for multi-file PRs"
+    },
+    {
+      "attempts": 0,
+      "check": "uv run pytest tests/test_github.py -q",
+      "deps": [
+        "prd-01"
+      ],
+      "detail": "Add GitHub PR fetcher src/ki_review/github.py: given a PR URL return unified diff text via API, GITHUB_TOKEN from env for private repos, public works unauthenticated, typed HTTP errors.\nProduces: fetch_pr_diff(url: str) -> str",
+      "id": "prd-08",
+      "origin": "spec",
+      "passes": false,
+      "title": "GitHub PR diff fetcher with token support"
+    },
+    {
+      "attempts": 0,
+      "check": "uv run pytest tests/test_static_checks.py -q",
+      "deps": [
+        "prd-06"
+      ],
+      "detail": "Add static checks engine src/ki_review/checks.py orchestrating all dimensions over parsed files, deterministic and offline.\nConsumes: build_finding(code: str, message: str, severity: str, path: str, line: int) -> Finding\nProduces: run_static_checks(files: list[FileDiff]) -> list[Finding]",
+      "id": "prd-09",
+      "origin": "spec",
+      "passes": false,
+      "title": "Static checks engine orchestrating dimensions"
+    },
+    {
+      "attempts": 0,
+      "check": "uv run pytest tests/test_security.py -q",
+      "deps": [
+        "prd-06"
+      ],
+      "detail": "Add security checks: SQL injection via string formatting, hardcoded secrets, unsafe defaults, missing timeouts.\nConsumes: build_finding(code: str, message: str, severity: str, path: str, line: int) -> Finding\nProduces: check_security(files: list[FileDiff]) -> list[Finding]",
+      "id": "prd-10",
+      "origin": "spec",
+      "passes": false,
+      "title": "Security checks for injection and secrets"
+    },
+    {
+      "attempts": 0,
+      "check": "uv run pytest tests/test_hallucinated.py -q",
+      "deps": [
+        "prd-06"
+      ],
+      "detail": "Add hallucinated-API checks against installed Python stdlib and pinned deps: unknown imports, removed pandas-style APIs, version guards.\nConsumes: build_finding(code: str, message: str, severity: str, path: str, line: int) -> Finding\nProduces: check_hallucinated_apis(files: list[FileDiff]) -> list[Finding]",
+      "id": "prd-11",
+      "origin": "spec",
+      "passes": false,
+      "title": "Hallucinated API detection for Python deps"
+    },
+    {
+      "attempts": 0,
+      "check": "uv run pytest tests/test_quality.py -q",
+      "deps": [
+        "prd-06"
+      ],
+      "detail": "Add quality checks: missing tests for new branches, swallowed exceptions, N+1/blocking patterns, copy-paste duplicates, dead code.\nConsumes: build_finding(code: str, message: str, severity: str, path: str, line: int) -> Finding\nProduces: check_tests_and_errors(files: list[FileDiff]) -> list[Finding]",
+      "id": "prd-12",
+      "origin": "spec",
+      "passes": false,
+      "title": "Test quality error handling and duplication checks"
+    },
+    {
+      "attempts": 0,
+      "check": "uv run pytest tests/test_report.py -q",
+      "deps": [
+        "prd-06",
+        "prd-09",
+        "prd-10",
+        "prd-11",
+        "prd-12"
+      ],
+      "detail": "Add report builder src/ki_review/report.py sorting findings by severity, attaching file and line anchors.\nConsumes: build_finding(code: str, message: str, severity: str, path: str, line: int) -> Finding\nConsumes: run_static_checks(files: list[FileDiff]) -> list[Finding]\nConsumes: check_security(files: list[FileDiff]) -> list[Finding]\nConsumes: check_hallucinated_apis(files: list[FileDiff]) -> list[Finding]\nConsumes: check_tests_and_errors(files: list[FileDiff]) -> list[Finding]\nProduces: build_report(request: ReviewRequest, findings: list[Finding]) -> ReviewReport",
+      "id": "prd-13",
+      "origin": "spec",
+      "passes": false,
+      "title": "Review report builder with severity sorting"
+    },
+    {
+      "attempts": 0,
+      "check": "uv run pytest tests/test_store.py -q",
+      "deps": [
+        "prd-06"
+      ],
+      "detail": "Add in-memory report store src/ki_review/store.py with uuid ids for demo scope, no DB.\nProduces: save_report(report: ReviewReport) -> str\nProduces: get_report(report_id: str) -> ReviewReport",
+      "id": "prd-14",
+      "origin": "spec",
+      "passes": false,
+      "title": "In-memory review report store"
+    },
+    {
+      "attempts": 0,
+      "check": "uv run pytest tests/test_routes.py -q",
+      "deps": [
+        "prd-04",
+        "prd-05",
+        "prd-07",
+        "prd-08",
+        "prd-09",
+        "prd-10",
+        "prd-11",
+        "prd-12",
+        "prd-13",
+        "prd-14"
+      ],
+      "detail": "Add HTTP routes: POST /reviews accepting pr_url or diff, GET /reviews/{id}, GET / form page. Orchestrates fetch, parse, checks, build, save with typed errors.\nConsumes: create_app() -> FastAPI\nConsumes: get_settings() -> Settings\nConsumes: parse_unified_diff(text: str) -> list[FileDiff]\nConsumes: fetch_pr_diff(url: str) -> str\nConsumes: run_static_checks(files: list[FileDiff]) -> list[Finding]\nConsumes: check_security(files: list[FileDiff]) -> list[Finding]\nConsumes: check_hallucinated_apis(files: list[FileDiff]) -> list[Finding]\nConsumes: check_tests_and_errors(files: list[FileDiff]) -> list[Finding]\nConsumes: build_report(request: ReviewRequest, findings: list[Finding]) -> ReviewReport\nConsumes: save_report(report: ReviewReport) -> str\nConsumes: get_report(report_id: str) -> ReviewReport",
+      "id": "prd-15",
+      "origin": "spec",
+      "passes": false,
+      "title": "HTTP routes for review submission and display"
+    },
+    {
+      "attempts": 0,
+      "check": "uv run pytest tests/test_ui.py -q",
+      "deps": [
+        "prd-15"
+      ],
+      "detail": "Add single-page HTML UI with diff view, severity badges, clickable file:line anchors, PR URL and diff-paste forms. Server-rendered, no JS build step.",
+      "id": "prd-16",
+      "origin": "spec",
+      "passes": false,
+      "title": "Single-page HTML diff and findings UI"
+    },
+    {
+      "attempts": 0,
+      "check": "uv run pytest tests/test_api_errors.py -q",
+      "deps": [
+        "prd-15"
+      ],
+      "detail": "Add JSON API plus typed error responses for bad URL, empty diff, oversized payload, GitHub 404/rate-limit, with consistent error schema.",
+      "id": "prd-17",
+      "origin": "spec",
+      "passes": false,
+      "title": "JSON API and typed error responses"
+    },
+    {
+      "attempts": 0,
+      "check": "test -f tests/fixtures/sample.diff && uv run pytest tests/test_sample.py -q",
+      "deps": [
+        "prd-01"
+      ],
+      "detail": "Add golden-path sample fixture tests/fixtures/sample.diff with known findings for demo and smoke. Loader used by final check.\nProduces: load_sample_diff() -> str",
+      "id": "prd-18",
+      "origin": "spec",
+      "passes": false,
+      "title": "Golden-path sample PR fixture"
+    },
+    {
+      "attempts": 0,
+      "check": "grep -q \"uv run\" README.md && grep -q \"localhost:8000\" README.md",
+      "deps": [
+        "prd-16"
+      ],
+      "detail": "Extend README with usage block: local run, docker run, POST example, UI screenshot description. No code changes.",
+      "id": "prd-19",
+      "origin": "spec",
+      "passes": false,
+      "title": "README usage block for local and docker"
+    },
+    {
+      "attempts": 0,
+      "check": "docker build -t app:test . && docker run --rm -d -p 8000:8000 --name t app:test && sleep 2 && curl -sf localhost:8000/health && docker rm -f t",
+      "deps": [
+        "prd-03",
+        "prd-04",
+        "prd-15",
+        "prd-16",
+        "prd-17",
+        "prd-18"
+      ],
+      "detail": "Final smoke proving DoD: multi-stage build, /health reachable, golden sample reviewable via UI. Uses fixture loader for manual verification.\nConsumes: load_sample_diff() -> str",
+      "id": "prd-20",
+      "origin": "spec",
+      "passes": false,
+      "title": "Docker smoke with health endpoint reachable"
+    }
+  ],
+  "language": "python",
+  "target": "http-service"
+}
