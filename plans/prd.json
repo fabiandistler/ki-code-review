@@ -259,5 +259,6 @@
     }
   ],
   "language": "python",
-  "target": "http-service"
+  "target": "http-service",
+  "branch": "poc/2026-10-12"
 }
