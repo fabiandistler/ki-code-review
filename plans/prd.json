@@ -32,7 +32,7 @@
       "detail": "Add multi-stage Dockerfile: base, test stage running the suite, final runtime stage exposing 8000. No app copy tricks, deterministic builds.",
       "id": "prd-03",
       "origin": "spec",
-      "passes": false,
+      "passes": true,
       "title": "Multi-stage Dockerfile with test stage"
     },
     {
