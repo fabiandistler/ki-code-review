@@ -1,7 +1,9 @@
+import pytest
+
 from ki_review.config import get_settings
 
 
-def test_get_settings_uses_defaults(monkeypatch) -> None:
+def test_get_settings_uses_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("HOST", raising=False)
     monkeypatch.delenv("PORT", raising=False)
     monkeypatch.delenv("GITHUB_TOKEN", raising=False)
@@ -13,7 +15,7 @@ def test_get_settings_uses_defaults(monkeypatch) -> None:
     assert settings.github_token is None
 
 
-def test_get_settings_reads_environment(monkeypatch) -> None:
+def test_get_settings_reads_environment(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("HOST", "127.0.0.1")
     monkeypatch.setenv("PORT", "9001")
     monkeypatch.setenv("GITHUB_TOKEN", "test-token")
