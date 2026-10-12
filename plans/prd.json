@@ -44,7 +44,7 @@
       "detail": "Create FastAPI app factory in src/ki_review/app.py with GET /health returning {\"status\": \"ok\"}. Typed, no business logic.\nProduces: create_app() -> FastAPI",
       "id": "prd-04",
       "origin": "spec",
-      "passes": false,
+      "passes": true,
       "title": "FastAPI app factory with health endpoint"
     },
     {
