@@ -56,7 +56,7 @@
       "detail": "Add typed settings module src/ki_review/config.py reading env (HOST, PORT, GITHUB_TOKEN optional) with defaults. No secrets stored.\nProduces: get_settings() -> Settings",
       "id": "prd-05",
       "origin": "spec",
-      "passes": false,
+      "passes": true,
       "title": "Typed settings and logging base"
     },
     {
