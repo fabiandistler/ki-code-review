@@ -8,7 +8,7 @@
       "detail": "Scaffold minimal Python layout with uv: package src/ki_review, tests/, pyproject.toml with ruff (E,F,I,B,UP) and pyright strict, dev deps pytest/ruff/pyright. No app code yet, only structure plus locked deps.",
       "id": "prd-01",
       "origin": "spec",
-      "passes": false,
+      "passes": true,
       "title": "Toolchain scaffold Python uv package layout"
     },
     {
