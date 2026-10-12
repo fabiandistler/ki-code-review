@@ -20,7 +20,7 @@
       "detail": "Add GitHub Actions workflow .github/workflows/ci.yml on pull_request and push to main with paths-ignore plans/**, running full gate: pytest, ruff check, ruff format --check, pyright.",
       "id": "prd-02",
       "origin": "spec",
-      "passes": false,
+      "passes": true,
       "title": "GitHub Actions CI with test and lint gate"
     },
     {
