@@ -80,7 +80,7 @@
       "detail": "Add unified diff parser src/ki_review/diff.py handling multi-file diffs, hunks, line numbers, empty and malformed input with typed errors.\nProduces: parse_unified_diff(text: str) -> list[FileDiff]",
       "id": "prd-07",
       "origin": "spec",
-      "passes": false,
+      "passes": true,
       "title": "Unified diff parser for multi-file PRs"
     },
     {
