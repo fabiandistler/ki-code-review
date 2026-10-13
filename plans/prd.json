@@ -105,7 +105,7 @@
         "prd-04"
       ],
       "check": "uv run pytest tests/test_ui.py -q",
-      "passes": false,
+      "passes": true,
       "attempts": 0,
       "origin": "spec",
       "detail": "Serve a simple HTML page with one form for a GitHub pull request URL and another for pasted unified diff text. Use server-rendered HTML without a JavaScript build or new UI dependency."
@@ -118,7 +118,7 @@
         "prd-07"
       ],
       "check": "uv run pytest tests/test_ui.py -q",
-      "passes": false,
+      "passes": true,
       "attempts": 0,
       "origin": "spec",
       "detail": "Render each changed path as a separate section and show its unified diff line by line with line numbers and addition or removal markers. Escape file names and diff text before inserting them into HTML."
@@ -133,7 +133,7 @@
         "prd-10"
       ],
       "check": "uv run pytest tests/test_routes.py -q",
-      "passes": false,
+      "passes": true,
       "attempts": 0,
       "origin": "spec",
       "detail": "Handle form submission by fetching the PR diff or using the pasted diff, parsing it, and returning the rendered file view. Do not run code checks, generate findings, or persist reports."
@@ -145,7 +145,7 @@
         "prd-11"
       ],
       "check": "uv run pytest tests/test_routes.py -q",
-      "passes": false,
+      "passes": true,
       "attempts": 0,
       "origin": "spec",
       "detail": "Show readable page errors for malformed PR URLs, unavailable GitHub PRs, rate limits, empty diffs, and malformed unified diffs. Keep the input form available so the user can correct the request."
@@ -158,7 +158,7 @@
         "prd-12"
       ],
       "check": "uv run pytest tests/test_routes.py -q",
-      "passes": false,
+      "passes": true,
       "attempts": 0,
       "origin": "spec",
       "detail": "Add a representative multi-file diff fixture and exercise the form submission through the rendered HTML response, including file headings and line-level patch content."
