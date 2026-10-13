@@ -99,6 +99,25 @@ def test_check_hallucinated_apis_respects_python_version_guards() -> None:
     ]
 
 
+def test_check_hallucinated_apis_respects_outer_else_after_nested_guard() -> None:
+    major, minor = sys.version_info[:2]
+    files = [
+        FileDiff(
+            path="src/compat.py",
+            patch="",
+            added_lines=(
+                (10, f"if sys.version_info >= ({major}, {minor}):"),
+                (11, f"    if sys.version_info >= ({major}, {minor + 1}):"),
+                (12, "        import ki_review_future_package_8675309"),
+                (13, "else:"),
+                (14, "    import ki_review_missing_package_8675309"),
+            ),
+        )
+    ]
+
+    assert check_hallucinated_apis(files) == []
+
+
 def test_check_hallucinated_apis_reports_removed_pandas_append() -> None:
     files = [
         FileDiff(
