@@ -1,7 +1,7 @@
 [project]
 name = "ki-review"
 version = "0.1.0"
-description = "Review AI-generated code changes against best practices"
+description = "Inspect GitHub pull request diffs in a browser"
 readme = "README.md"
 authors = [
     { name = "Fabian Distler", email = "fabian.distler@gmx.net" }
