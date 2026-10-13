@@ -37,8 +37,19 @@ def check_hallucinated_apis(files: list[FileDiff]) -> list[Finding]:
             indentation = len(source_line) - len(source_line.lstrip())
 
             if stripped_line == "else:" and version_guards:
-                guard_indentation, guard_is_active = version_guards[-1]
-                if indentation == guard_indentation:
+                matching_guard_index = next(
+                    (
+                        index
+                        for index in range(len(version_guards) - 1, -1, -1)
+                        if version_guards[index][0] == indentation
+                    ),
+                    None,
+                )
+                if matching_guard_index is not None:
+                    del version_guards[matching_guard_index + 1 :]
+                    guard_indentation, guard_is_active = version_guards[
+                        matching_guard_index
+                    ]
                     version_guards[-1] = (guard_indentation, not guard_is_active)
                     continue
 
