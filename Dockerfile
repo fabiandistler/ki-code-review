@@ -11,6 +11,8 @@ FROM base AS test
 RUN uv sync --locked --no-install-project
 COPY src ./src
 COPY tests ./tests
+COPY Dockerfile ./Dockerfile
+COPY .github ./.github
 RUN uv sync --locked
 RUN uv run pytest -q
 
