@@ -68,7 +68,7 @@
       "detail": "Add domain models src/ki_review/models.py: FileDiff, Finding, ReviewRequest, ReviewReport as pydantic/dataclasses with severity enum. Helper constructor used by all checks.\nProduces: build_finding(code: str, message: str, severity: str, path: str, line: int) -> Finding",
       "id": "prd-06",
       "origin": "spec",
-      "passes": false,
+      "passes": true,
       "title": "Domain models for findings and reports"
     },
     {
