@@ -131,7 +131,7 @@
       "detail": "Add hallucinated-API checks against installed Python stdlib and pinned deps: unknown imports, removed pandas-style APIs, version guards.\nConsumes: build_finding(code: str, message: str, severity: str, path: str, line: int) -> Finding\nProduces: check_hallucinated_apis(files: list[FileDiff]) -> list[Finding]",
       "id": "prd-11",
       "origin": "spec",
-      "passes": false,
+      "passes": true,
       "title": "Hallucinated API detection for Python deps"
     },
     {
