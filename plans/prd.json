@@ -242,6 +242,20 @@
     },
     {
       "attempts": 0,
+      "check": "uv run pytest tests/test_runtime.py -q && docker build --target runtime -t app:runtime . && docker run --rm -d -p 8000:8000 --name ki-review-prd21 app:runtime && sleep 2 && curl -sf localhost:8000/health && docker rm -f ki-review-prd21",
+      "deps": [
+        "prd-03",
+        "prd-04",
+        "prd-05"
+      ],
+      "detail": "Add a launchable `python -m ki_review` entry point that reads HOST and PORT through get_settings() and serves the FastAPI factory with Uvicorn. Add Uvicorn as a runtime dependency and make the Docker runtime start this entry point. The container must answer GET /health after docker run.",
+      "id": "prd-21",
+      "origin": "checkpoint",
+      "passes": false,
+      "title": "ASGI server entrypoint for Docker runtime"
+    },
+    {
+      "attempts": 0,
       "check": "docker build -t app:test . && docker run --rm -d -p 8000:8000 --name t app:test && sleep 2 && curl -sf localhost:8000/health && docker rm -f t",
       "deps": [
         "prd-03",
@@ -249,7 +263,8 @@
         "prd-15",
         "prd-16",
         "prd-17",
-        "prd-18"
+        "prd-18",
+        "prd-21"
       ],
       "detail": "Final smoke proving DoD: multi-stage build, /health reachable, golden sample reviewable via UI. Uses fixture loader for manual verification.\nConsumes: load_sample_diff() -> str",
       "id": "prd-20",
