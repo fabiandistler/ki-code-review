@@ -1,0 +1,211 @@
+{
+  "approved": true,
+  "language": "python",
+  "target": "http-service",
+  "branch": "poc/2026-10-12",
+  "items": [
+    {
+      "id": "prd-01",
+      "title": "Toolchain scaffold Python uv package layout",
+      "deps": [],
+      "check": "test -f pyproject.toml && test -f src/ki_review/__init__.py && uv sync --frozen && uv run ruff check . && uv run ruff format --check . && uv run pyright",
+      "passes": true,
+      "attempts": 0,
+      "origin": "spec",
+      "detail": "Scaffold the Python package with uv, pytest, Ruff, and pyright. Keep application behavior out of the scaffold."
+    },
+    {
+      "id": "prd-02",
+      "title": "GitHub Actions CI with test and lint gate",
+      "deps": [
+        "prd-01"
+      ],
+      "check": "test -f .github/workflows/ci.yml && grep -q \"uv run pytest\" .github/workflows/ci.yml && grep -q \"plans/\" .github/workflows/ci.yml",
+      "passes": true,
+      "attempts": 0,
+      "origin": "spec",
+      "detail": "Run pytest, Ruff, formatting, and pyright in GitHub Actions on pull requests and pushes to main. Ignore plans/ changes."
+    },
+    {
+      "id": "prd-03",
+      "title": "Multi-stage Dockerfile with test stage",
+      "deps": [
+        "prd-01"
+      ],
+      "check": "test -f Dockerfile && test $(grep -c \"^FROM\" Dockerfile) -ge 2 && grep -q \"AS test\" Dockerfile",
+      "passes": true,
+      "attempts": 0,
+      "origin": "spec",
+      "detail": "Add a multi-stage Dockerfile with a test stage and a runtime stage exposing port 8000."
+    },
+    {
+      "id": "prd-04",
+      "title": "FastAPI app factory with health endpoint",
+      "deps": [
+        "prd-01"
+      ],
+      "check": "uv run pytest tests/test_health.py -q",
+      "passes": true,
+      "attempts": 0,
+      "origin": "spec",
+      "detail": "Create the FastAPI app factory and GET /health endpoint."
+    },
+    {
+      "id": "prd-05",
+      "title": "Typed settings and logging base",
+      "deps": [
+        "prd-01"
+      ],
+      "check": "uv run pytest tests/test_config.py -q",
+      "passes": true,
+      "attempts": 0,
+      "origin": "spec",
+      "detail": "Read HOST, PORT, and optional GITHUB_TOKEN from environment variables with local defaults."
+    },
+    {
+      "id": "prd-06",
+      "title": "Data models for displaying parsed file diffs",
+      "deps": [
+        "prd-01"
+      ],
+      "check": "uv run pytest tests/test_models.py -q",
+      "passes": true,
+      "attempts": 0,
+      "origin": "spec",
+      "detail": "Keep the FileDiff model needed by the viewer and remove review findings, severity, and report models. Represent each changed path and its unified diff content."
+    },
+    {
+      "id": "prd-07",
+      "title": "Unified diff parser for multi-file PRs",
+      "deps": [
+        "prd-06"
+      ],
+      "check": "uv run pytest tests/test_diff_parser.py -q",
+      "passes": true,
+      "attempts": 0,
+      "origin": "spec",
+      "detail": "Parse a unified diff into changed files while preserving patch text and added line numbers. Reject empty or malformed diffs with a typed error."
+    },
+    {
+      "id": "prd-08",
+      "title": "GitHub PR diff fetcher with token support",
+      "deps": [
+        "prd-05"
+      ],
+      "check": "uv run pytest tests/test_github.py -q",
+      "passes": true,
+      "attempts": 0,
+      "origin": "spec",
+      "detail": "Fetch the diff for a GitHub pull request URL. Public PRs work without credentials; an optional GITHUB_TOKEN supports private repositories."
+    },
+    {
+      "id": "prd-09",
+      "title": "Browser page with PR URL and diff input",
+      "deps": [
+        "prd-04"
+      ],
+      "check": "uv run pytest tests/test_ui.py -q",
+      "passes": true,
+      "attempts": 0,
+      "origin": "spec",
+      "detail": "Serve a simple HTML page with one form for a GitHub pull request URL and another for pasted unified diff text. Use server-rendered HTML without a JavaScript build or new UI dependency."
+    },
+    {
+      "id": "prd-10",
+      "title": "Readable file-by-file diff display",
+      "deps": [
+        "prd-06",
+        "prd-07"
+      ],
+      "check": "uv run pytest tests/test_ui.py -q",
+      "passes": true,
+      "attempts": 0,
+      "origin": "spec",
+      "detail": "Render each changed path as a separate section and show its unified diff line by line with line numbers and addition or removal markers. Escape file names and diff text before inserting them into HTML."
+    },
+    {
+      "id": "prd-11",
+      "title": "Submit PR or pasted diff for display",
+      "deps": [
+        "prd-05",
+        "prd-08",
+        "prd-09",
+        "prd-10"
+      ],
+      "check": "uv run pytest tests/test_routes.py -q",
+      "passes": true,
+      "attempts": 0,
+      "origin": "spec",
+      "detail": "Handle form submission by fetching the PR diff or using the pasted diff, parsing it, and returning the rendered file view. Do not run code checks, generate findings, or persist reports."
+    },
+    {
+      "id": "prd-12",
+      "title": "Show useful HTML errors for invalid input",
+      "deps": [
+        "prd-11"
+      ],
+      "check": "uv run pytest tests/test_routes.py -q",
+      "passes": true,
+      "attempts": 0,
+      "origin": "spec",
+      "detail": "Show readable page errors for malformed PR URLs, unavailable GitHub PRs, rate limits, empty diffs, and malformed unified diffs. Keep the input form available so the user can correct the request."
+    },
+    {
+      "id": "prd-13",
+      "title": "End-to-end browser flow for a sample PR diff",
+      "deps": [
+        "prd-11",
+        "prd-12"
+      ],
+      "check": "uv run pytest tests/test_routes.py -q",
+      "passes": true,
+      "attempts": 0,
+      "origin": "spec",
+      "detail": "Add a representative multi-file diff fixture and exercise the form submission through the rendered HTML response, including file headings and line-level patch content."
+    },
+    {
+      "id": "prd-14",
+      "title": "README instructions for opening and viewing PRs",
+      "deps": [
+        "prd-09",
+        "prd-11"
+      ],
+      "check": "grep -q \"uv run\" README.md && grep -q \"localhost:8000\" README.md && grep -q \"GITHUB_TOKEN\" README.md",
+      "passes": true,
+      "attempts": 0,
+      "origin": "spec",
+      "detail": "Explain how to run the browser tool, paste a GitHub PR URL or diff, and optionally configure GITHUB_TOKEN for private repositories."
+    },
+    {
+      "id": "prd-15",
+      "title": "ASGI server entrypoint for Docker runtime",
+      "deps": [
+        "prd-03",
+        "prd-04",
+        "prd-05"
+      ],
+      "check": "uv run pytest tests/test_runtime.py -q",
+      "passes": true,
+      "attempts": 0,
+      "origin": "spec",
+      "detail": "Add a python -m ki_review entry point that reads HOST and PORT and serves the FastAPI app. Add only the runtime server dependency needed and start this entry point in the Docker runtime."
+    },
+    {
+      "id": "prd-16",
+      "title": "Docker smoke with browser page reachable",
+      "deps": [
+        "prd-03",
+        "prd-09",
+        "prd-11",
+        "prd-12",
+        "prd-13",
+        "prd-15"
+      ],
+      "check": "docker build --target runtime -t ki-review:smoke . && docker rm -f ki-review-smoke >/dev/null 2>&1; docker run --rm -d -p 8000:8000 --name ki-review-smoke ki-review:smoke && curl -sf --retry 30 --retry-delay 1 --retry-all-errors localhost:8000/health && curl -sf localhost:8000/ -o /dev/null; rc=$?; docker rm -f ki-review-smoke >/dev/null 2>&1; exit $rc",
+      "passes": true,
+      "attempts": 0,
+      "origin": "spec",
+      "detail": "Build the runtime image, start the service, and verify both the health endpoint and browser form respond."
+    }
+  ]
+}

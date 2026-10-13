@@ -1,0 +1,34 @@
+[project]
+name = "ki-review"
+version = "0.1.0"
+description = "Inspect GitHub pull request diffs in a browser"
+readme = "README.md"
+authors = [
+    { name = "Fabian Distler", email = "fabian.distler@gmx.net" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi>=0.142.2",
+    "uvicorn>=0.54.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pyright]
+typeCheckingMode = "strict"
+
+[tool.uv]
+exclude-newer = "7 days"
+
+[dependency-groups]
+dev = [
+    "httpx2>=2.13.1",
+    "pyright>=1.1.414",
+    "pytest>=9.1.1",
+    "ruff>=0.16.10",
+]
