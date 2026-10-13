@@ -136,6 +136,42 @@
     },
     {
       "attempts": 0,
+      "check": "uv run pytest tests/test_diff_parser.py -q",
+      "deps": [
+        "prd-07"
+      ],
+      "detail": "Reject arbitrary nonempty content after a completed hunk with DiffParseError while continuing to accept valid unified-diff metadata. Add regression tests.",
+      "id": "prd-22",
+      "origin": "checkpoint",
+      "passes": true,
+      "title": "Reject malformed trailing unified diff content"
+    },
+    {
+      "attempts": 0,
+      "check": "uv run pytest tests/test_hallucinated.py -q",
+      "deps": [
+        "prd-11"
+      ],
+      "detail": "Detect unavailable names in absolute from-module imports even when the imported module exists, including `from json import missing_symbol`. Add regression tests and preserve valid imports.",
+      "id": "prd-23",
+      "origin": "checkpoint",
+      "passes": false,
+      "title": "Validate imported names in known modules"
+    },
+    {
+      "attempts": 0,
+      "check": "uv run pytest tests/test_hallucinated.py -q",
+      "deps": [
+        "prd-11"
+      ],
+      "detail": "Track `else:` branches against the matching outer Python version guard when nested guards are present, so imports in an inactive branch are not reported as reachable. Add regression tests for nested guards.",
+      "id": "prd-24",
+      "origin": "checkpoint",
+      "passes": false,
+      "title": "Handle nested Python version guard branches"
+    },
+    {
+      "attempts": 0,
       "check": "uv run pytest tests/test_quality.py -q",
       "deps": [
         "prd-06"
