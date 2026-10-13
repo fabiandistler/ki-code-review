@@ -167,7 +167,7 @@
       "detail": "Track `else:` branches against the matching outer Python version guard when nested guards are present, so imports in an inactive branch are not reported as reachable. Add regression tests for nested guards.",
       "id": "prd-24",
       "origin": "checkpoint",
-      "passes": false,
+      "passes": true,
       "title": "Handle nested Python version guard branches"
     },
     {
