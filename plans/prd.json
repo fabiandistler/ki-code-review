@@ -155,7 +155,7 @@
       "detail": "Detect unavailable names in absolute from-module imports even when the imported module exists, including `from json import missing_symbol`. Add regression tests and preserve valid imports.",
       "id": "prd-23",
       "origin": "checkpoint",
-      "passes": false,
+      "passes": true,
       "title": "Validate imported names in known modules"
     },
     {
