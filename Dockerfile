@@ -18,3 +18,4 @@ FROM base AS runtime
 COPY src ./src
 RUN uv sync --locked --no-dev
 EXPOSE 8000
+CMD ["uv", "run", "--no-dev", "python", "-m", "ki_review"]
