@@ -84,11 +84,15 @@ def _parse_file_section(lines: list[str]) -> FileDiff:
 
     added_lines: list[tuple[int, str]] = []
     line_index = 0
+    completed_hunk = False
     while line_index < len(lines):
         if lines[line_index].startswith("@@"):
             line_index, hunk_added_lines = _parse_hunk(lines, line_index)
             added_lines.extend(hunk_added_lines)
+            completed_hunk = True
         else:
+            if completed_hunk and lines[line_index].strip():
+                raise DiffParseError("Unexpected content after completed hunk")
             line_index += 1
 
     return FileDiff(
