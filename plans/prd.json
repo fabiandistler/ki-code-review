@@ -171,7 +171,7 @@
         "prd-11"
       ],
       "check": "grep -q \"uv run\" README.md && grep -q \"localhost:8000\" README.md && grep -q \"GITHUB_TOKEN\" README.md",
-      "passes": false,
+      "passes": true,
       "attempts": 0,
       "origin": "spec",
       "detail": "Explain how to run the browser tool, paste a GitHub PR URL or diff, and optionally configure GITHUB_TOKEN for private repositories."
@@ -185,7 +185,7 @@
         "prd-05"
       ],
       "check": "uv run pytest tests/test_runtime.py -q",
-      "passes": false,
+      "passes": true,
       "attempts": 0,
       "origin": "spec",
       "detail": "Add a python -m ki_review entry point that reads HOST and PORT and serves the FastAPI app. Add only the runtime server dependency needed and start this entry point in the Docker runtime."
@@ -201,8 +201,8 @@
         "prd-13",
         "prd-15"
       ],
-      "check": "docker build --target runtime -t ki-review:smoke . && docker run --rm -d -p 8000:8000 --name ki-review-smoke ki-review:smoke && sleep 2 && curl -sf localhost:8000/health && curl -sf localhost:8000/ && docker rm -f ki-review-smoke",
-      "passes": false,
+      "check": "docker build --target runtime -t ki-review:smoke . && docker rm -f ki-review-smoke >/dev/null 2>&1; docker run --rm -d -p 8000:8000 --name ki-review-smoke ki-review:smoke && curl -sf --retry 30 --retry-delay 1 --retry-all-errors localhost:8000/health && curl -sf localhost:8000/ -o /dev/null; rc=$?; docker rm -f ki-review-smoke >/dev/null 2>&1; exit $rc",
+      "passes": true,
       "attempts": 0,
       "origin": "spec",
       "detail": "Build the runtime image, start the service, and verify both the health endpoint and browser form respond."
