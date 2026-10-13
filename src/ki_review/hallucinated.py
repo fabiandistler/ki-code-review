@@ -64,7 +64,7 @@ def check_hallucinated_apis(files: list[FileDiff]) -> list[Finding]:
             if any(not guard_is_active for _, guard_is_active in version_guards):
                 continue
 
-            for module_name in _imported_modules(source_line):
+            for module_name, imported_names in _imports(source_line):
                 if not _module_is_available(module_name):
                     findings.append(
                         build_finding(
@@ -72,6 +72,24 @@ def check_hallucinated_apis(files: list[FileDiff]) -> list[Finding]:
                             message=(
                                 f"Imported module '{module_name}' is unavailable "
                                 "in the current environment."
+                            ),
+                            severity="high",
+                            path=file_diff.path,
+                            line=line_number,
+                        )
+                    )
+                    continue
+                for imported_name in imported_names:
+                    if imported_name == "*" or _imported_name_is_available(
+                        module_name, imported_name
+                    ):
+                        continue
+                    findings.append(
+                        build_finding(
+                            code="API001",
+                            message=(
+                                f"Imported name '{imported_name}' is unavailable "
+                                f"from module '{module_name}'."
                             ),
                             severity="high",
                             path=file_diff.path,
@@ -94,20 +112,27 @@ def check_hallucinated_apis(files: list[FileDiff]) -> list[Finding]:
     return findings
 
 
-def _imported_modules(source_line: str) -> list[str]:
+def _imports(source_line: str) -> list[tuple[str, tuple[str, ...]]]:
     try:
         syntax_tree = ast.parse(source_line.lstrip())
     except SyntaxError:
         return []
 
-    modules: list[str] = []
+    imports: list[tuple[str, tuple[str, ...]]] = []
     for statement in syntax_tree.body:
         if isinstance(statement, ast.Import):
-            modules.extend(alias.name for alias in statement.names)
+            imports.extend((alias.name, ()) for alias in statement.names)
         elif isinstance(statement, ast.ImportFrom) and statement.level == 0:
             if statement.module is not None:
-                modules.append(statement.module)
-    return modules
+                imports.append(
+                    (statement.module, tuple(alias.name for alias in statement.names))
+                )
+    return imports
+
+
+def _imported_name_is_available(module_name: str, imported_name: str) -> bool:
+    imported_module = __import__(module_name, fromlist=[imported_name])
+    return hasattr(imported_module, imported_name)
 
 
 def _module_is_available(module_name: str) -> bool:
