@@ -119,7 +119,7 @@
       "detail": "Add security checks: SQL injection via string formatting, hardcoded secrets, unsafe defaults, missing timeouts.\nConsumes: build_finding(code: str, message: str, severity: str, path: str, line: int) -> Finding\nProduces: check_security(files: list[FileDiff]) -> list[Finding]",
       "id": "prd-10",
       "origin": "spec",
-      "passes": false,
+      "passes": true,
       "title": "Security checks for injection and secrets"
     },
     {
