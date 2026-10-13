@@ -32,6 +32,42 @@ def test_check_hallucinated_apis_reports_unknown_imports() -> None:
     ]
 
 
+def test_check_hallucinated_apis_reports_unknown_imported_names() -> None:
+    files = [
+        FileDiff(
+            path="src/review.py",
+            patch="",
+            added_lines=((5, "from json import missing_symbol"),),
+        )
+    ]
+
+    findings = check_hallucinated_apis(files)
+
+    assert findings == [
+        Finding(
+            code="API001",
+            message=(
+                "Imported name 'missing_symbol' is unavailable from module 'json'."
+            ),
+            severity=Severity.HIGH,
+            path="src/review.py",
+            line=5,
+        )
+    ]
+
+
+def test_check_hallucinated_apis_accepts_valid_imported_names() -> None:
+    files = [
+        FileDiff(
+            path="src/review.py",
+            patch="",
+            added_lines=((5, "from json import dumps"),),
+        )
+    ]
+
+    assert check_hallucinated_apis(files) == []
+
+
 def test_check_hallucinated_apis_respects_python_version_guards() -> None:
     major, minor = sys.version_info[:2]
     files = [
