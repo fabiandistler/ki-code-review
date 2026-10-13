@@ -92,7 +92,7 @@
       "detail": "Add GitHub PR fetcher src/ki_review/github.py: given a PR URL return unified diff text via API, GITHUB_TOKEN from env for private repos, public works unauthenticated, typed HTTP errors.\nProduces: fetch_pr_diff(url: str) -> str",
       "id": "prd-08",
       "origin": "spec",
-      "passes": false,
+      "passes": true,
       "title": "GitHub PR diff fetcher with token support"
     },
     {
