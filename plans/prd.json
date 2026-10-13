@@ -99,7 +99,10 @@
       "attempts": 0,
       "check": "uv run pytest tests/test_static_checks.py -q",
       "deps": [
-        "prd-06"
+        "prd-06",
+        "prd-10",
+        "prd-11",
+        "prd-12"
       ],
       "detail": "Add static checks engine src/ki_review/checks.py orchestrating all dimensions over parsed files, deterministic and offline.\nConsumes: build_finding(code: str, message: str, severity: str, path: str, line: int) -> Finding\nProduces: run_static_checks(files: list[FileDiff]) -> list[Finding]",
       "id": "prd-09",
