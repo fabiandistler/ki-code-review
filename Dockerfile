@@ -18,6 +18,6 @@ RUN uv run pytest -q
 
 FROM base AS runtime
 COPY src ./src
-RUN uv sync --locked --no-dev
+RUN uv sync --locked --no-dev && /app/.venv/bin/python -m compileall -q src
 EXPOSE 8000
-CMD ["uv", "run", "--no-dev", "python", "-m", "ki_review"]
+CMD ["/app/.venv/bin/python", "-m", "ki_review"]
